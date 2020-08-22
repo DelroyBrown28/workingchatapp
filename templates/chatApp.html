@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <style>
+        div.msg_bbl {
+            background-color: #ddd;
+            padding: 5px 10px;
+            border-radius: 10px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Chat App!</h1>
+
+    <div class="text-center well"><b>My Super Python Chat App</b></div>
+
+    <div class="container">
+        <div class="col-sm-8">
+            <div class="no_message" style="font-weight: bolder;">
+                <h1 style='color: #ccc'>No message yet..</h1>
+                <div class="msg-wrapper"></div>
+                <div class="message_holder"></div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <form action="" method="POST">
+                <b>Type your message below <span class="glyphicon glyphicon-arrow-down"></span></b>
+                <div class="clearfix" style="margin-top: 5px;"></div>
+                <input type="text" class="username form-control" placeholder="User Name">
+                <div style="padding-top: 5px;"></div>
+                <input type="text" class="message form-control" placeholder="Messages">
+                <div style="padding-top: 5px;"></div>
+                <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-send"></span>
+                    Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
+        integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA=="
+        crossorigin="anonymous"></script>
+
+    <script>
+        var socket = io.connect('http://127.0.0.1:5000/')
+        // Broadcast a message
+        socket.on('connect', function () {
+            socket.emit('my event', {
+                data: 'New user Connected'
+            })
+        })
+        var form = $('form').on('submit', function (e) {
+            e.preventDefault()
+            var user_name = $('input.username').val()
+            var message = $('input.message').val()
+            socket.emit('my event', {
+                user: user_name,
+                msg: message
+            })
+            // Empty the message field
+            $('input.message').val('').focus()
+        })
+        // Capture message
+        socket.on('my response', function (msg) {
+            if(typeof msg.user !== 'undefined') {
+                $('h1').remove()
+                $('div.msg-wrapper').append('<div class="msgbbl"><br>'+msg.user+'<br> '+msg.msg+'</div')
+            }
+            console.log(msg)
+        })
+    </script>
+
+</body>
+
+</html>
